@@ -1,0 +1,1924 @@
+from ctypes.wintypes import LPWIN32_FIND_DATAW
+from io import TextIOWrapper
+from tkinter import *
+from random import *
+from math import *
+from turtle import *
+import tkinter.messagebox
+from xml.etree.ElementInclude import XINCLUDE_INCLUDE
+from pkg_resources import yield_lines
+
+class CTD(Frame):
+    def __init__(self, master = None):
+        super().__init__(master)
+        self.pack
+        self.x = 1300
+        self.y = 650
+        self.xm = self.x / 2
+        self.ym = self.y / 2
+        self.cv = Canvas(width=self.x, height=self.y, bg="black")
+        self.cv.pack()
+        self.setstartvariables()
+        self.makestartwidgets()
+        self.quit = False
+        while True:
+            self.after(1)
+            self.cv.update()
+            if self.quit == True:
+                break
+    def setstartvariables(self):
+        self.svar = StringVar()
+        self.xnow = 0
+        self.ynow = 0
+        self.explosion=list()
+        self.followlinelist = list()
+        self.towerlist = list()
+        self.errorlist = list()
+        self.munilist = list()
+        self.xlast = self.xnow
+        self.ylast = self.ynow
+        self.bindtower = False
+        self.cv.bind_all("<Motion>", self.movetower)
+        self.cv.bind_all("<ButtonPress-1>", self.click)
+        self.svar.set("Leicht") 
+        self.count = 0
+        self.schwierg = "Leicht"
+        self.mapchosen = "alpha"
+        self.img = PhotoImage(file="matheheft.png")
+        self.cv.create_image(-10,-20, image=self.img, anchor="nw")
+    def DeletestartW(self):
+        self.cv.delete(self.text1)
+        self.cv.delete(self.text2)
+        self.cv.delete(self.text3)
+        self.cv.delete(self.W1)
+        self.cv.delete(self.W2)
+        self.cv.delete(self.W3)
+        self.cv.delete(self.W4)
+        self.cv.delete(self.W5)
+        self.cv.delete(self.W6)
+        if self.mapchosen == "alpha":
+            self.cv.delete(self.alphamappart1)
+            self.cv.delete(self.alphamappart2)
+            self.cv.delete(self.alphamappart3)
+            self.cv.delete(self.alphamappart4)
+            self.cv.delete(self.alphamappart5)
+        elif self.mapchosen == "beta":
+            pass
+        elif self.mapchosen == "gammer":
+            pass
+        elif self.mapchosen == "delta":
+            pass
+        elif self.mapchosen == "x":
+            pass
+        elif self.mapchosen == "+":
+            pass
+        elif self.mapchosen == "-":
+            pass
+        elif self.mapchosen == "wurzel":
+            pass
+        elif self.mapchosen == "a²":
+            pass
+        elif self.mapchosen == "x²":
+            pass
+        elif self.mapchosen == "wurzela":
+            pass
+        elif self.mapchosen == "wurzelx":
+            pass
+        elif self.mapchosen == "E=mc²":
+            pass
+    def makestartwidgets(self):
+        self.swahl = ["Leicht", "Mittel", "Schwer"]
+        self.LPJ = ("Algerian", 100, "bold italic")
+        self.text1 = self.cv.create_text(900, 400, text="jetzt verwendet:", fill="black", font=("Arial", 15))
+        self.text2 = self.cv.create_text(350, 550, text="Schwierigkeitsgrad", fill="black", font=("Arial", 15))
+        self.text3 = self.cv.create_text(650, 150, text="CalculaterTD", font=self.LPJ, fill="#106070")
+        self.fortfahren = Button(text="Start!", command=self.Weiter, background="yellow", activebackground="yellow", font=("Arial", 65))
+        self.regeln = Button(text = "Regeln", command = self.regelinfo, font=("Arial", 30))
+        self.W1 = self.cv.create_window(150, 350, window=self.regeln)
+        self.end = Button(text = "Beenden", command = self.beenden, font=("Arial", 25))
+        self.W2 = self.cv.create_window(200, 500, window=self.end)
+        self.schgrad = OptionMenu(None, self.svar, *self.swahl, command = self.sgradhandler)
+        self.W3 = self.cv.create_window(350, 500, window=self.schgrad)
+        self.start = Button(text="Start!", command=self.StartGame, background="yellow", activebackground="yellow", font=("Arial", 65))
+        self.W4 = self.cv.create_window(600, 500, window=self.start)
+        self.choosemap = Button(text = "Wich map", command = self.mapmenue, font=("Arial", 25))
+        self.W5 = self.cv.create_window(900, 500, window=self.choosemap)
+        self.shadows = Button(text = "The Shadows", command = self.seeshadows, font=("Arial", 25))
+        self.W6 = self.cv.create_window(1100, 300, window=self.shadows)
+        if self.mapchosen == "alpha":
+            self.mapalpha(1000, 380, "actmap")
+        elif self.mapchosen == "beta":
+            self.mapbeta(920, 380, "actmap")
+        elif self.mapchosen == "gammer":
+            self.mapgammer(920, 380, "actmap")
+        elif self.mapchosen == "delta":
+            self.mapdelta(920, 380, "actmap")
+        elif self.mapchosen == "x":
+            self.mapx(920, 380, "actmap")
+        elif self.mapchosen == "+":
+            self.mapplus(920, 380, "actmap")
+        elif self.mapchosen == "-":
+            self.mapminus(920, 380, "actmap")
+        elif self.mapchosen == "wurzel":
+            self.mapwurzel(920, 380, "actmap")
+        elif self.mapchosen == "a²":
+            self.mapaquad(920, 380, "actmap")
+        elif self.mapchosen == "x²":
+            self.mapxquad(920, 380, "actmap")
+        elif self.mapchosen == "wurzela":
+            self.mapwurzela(920, 380, "actmap")
+        elif self.mapchosen == "wurzelx":
+            self.mapwuzelx(920, 380, "actmap")
+        elif self.mapchosen == "E=mc²":
+            self.mapEistmcquad(920, 380, "actmap")
+    def mapalpha(self, x, y, use):
+        if use == "actmap":
+            self.alphamappart1 = self.cv.create_arc(x+220, y, x+30, y+190, style="arc", start=210.0, extent=300.0, outline="#105050", width=7)
+            self.alphamappart2 = self.cv.create_line(x, y, x+45, y+147, fill="#105050", width=7)
+            self.alphamappart3 = self.cv.create_line(x+45, y+45, x, y+190, fill="#105050", width=7)
+            self.alphaplist1 = (x-10, y+20, x+20, y+10, x+12, y+35)
+            self.alphaplist2 = (x-8, y+160, x, y+185, x+20, y+170)
+            self.alphamappart4 = self.cv.create_polygon(*self.alphaplist1, width=7, outline="#105050")
+            self.alphamappart5 = self.cv.create_polygon(*self.alphaplist2, width=7, outline="#105050")
+        elif use == "playmap":
+            self.x = x
+            self.y = y
+            self.alphamappart1 = self.cv.create_arc(x+530, y, x+30, y+500, style="arc", start=210.0, extent=300.0, outline="#000000", width=25)
+            self.alphamappart2 = self.cv.create_line(x, y, x+70, y+390, fill="#000000", width=25)
+            self.alphamappart3 = self.cv.create_line(x, y+545, x+70, y+110, fill="#000000", width=25)
+            self.followlinelist = [[x, y]]
+            self.followlist = [4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 3, 3, 3, 4, 3 , 3, 4, 3, 3, 4, 3, 3, 4, 3, 3, 3, 4, 3, 3, 3, 3, 3, 3, 4, 3, 3, 3, 3, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 2, 3, 3, 2, 3, 3, 2, 3, 3, 2, 3, 3, 2, 3, 3, 3, 2, 3, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 2, 3, 2, 2, 3, 2, 3, 2, 2, 3, 2, 3, 2, 2, 2, 3, 2, 2, 3, 2, 2, 3, 2, 2, 2, 3, 2, 2, 2, 3, 2, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1,2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 1, 2, 2, 1, 2,2 , 1, 2, 1, 2, 2, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 2, 1, 1 , 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 8, 1, 1, 1, 1, 8, 8, 1, 1, 1, 1, 8, 8, 1, 1, 1, 1, 8, 1, 1, 8, 8, 1, 1, 8, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 8, 8, 1, 8, 1, 8, 8, 1, 8, 8, 1, 8, 8, 1, 8, 1, 8, 8, 1, 8, 8, 1, 8, 8, 1, 8, 8, 1, 8, 8, 8, 1, 8, 8, 8, 1, 8, 8, 8, 1, 8, 8, 8, 1, 8, 8, 1, 8, 8, 8, 8, 8, 1, 8, 8, 8, 8, 8, 8, 1, 8, 8, 8, 8, 8, 8, 1, 8, 8, 8, 8, 8, 8, 1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 7, 8, 8, 8, 8, 8, 7, 8, 8, 8, 8, 8, 7, 8, 8, 7, 8, 8, 8, 7, 8, 8,8 , 7, 8, 8, 8, 7, 8, 8, 8, 7, 8, 8, 8, 7, 8, 8, 8, 7, 8, 8, 8, 7, 8, 8, 7, 8, 8, 7, 8, 8, 8, 7, 8, 8, 8, 7, 8, 8, 7, 8, 7, 8, 7, 8, 7, 8, 7, 8, 7, 8, 7, 8, 7, 8, 7,8 ,7 ,8, 7, 8, 7, 8, 7, 8, 7, 8, 7, 7, 8, 7, 8, 7, 7, 8, 7, 8, 7, 7, 8, 7, 7, 8, 7, 7, 8, 7, 7, 8, 7, 7, 7, 8, 7, 7,7 , 8, 7,7 ,7 , 8, 7, 7, 7, 8, 7, 7, 7, 7, 7, 7, 7, 7, 8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6, 7, 7, 7, 6, 7, 7, 7, 6, 7, 7, 7, 6, 7, 7, 6, 7, 7, 6, 7, 6, 7, 7, 6, 7, 6, 7, 7, 6, 7, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 6, 7, 6, 7, 6, 6, 7, 6, 6, 7, 6, 7, 6, 6, 7, 6, 6, 7, 6, 6, 7, 6, 7, 6, 6, 7, 6, 6, 7, 6, 6, 7, 6, 6, 7, 6, 6, 7, 6, 7, 6, 6, 6, 6, 6, 7, 6, 6, 6, 6, 6, 7, 6, 6, 6, 6, 6, 7, 6, 6, 6, 6, 6, 7, 6, 6, 6, 6, 6, 7, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 6, 6, 7, 6, 6, 7, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 6, 6, 6, 6, 6, 6, 5, 6, 6, 6, 6, 6, 5, 6, 6, 6, 6, 6, 5, 6, 6, 6, 6, 5, 6, 6, 6, 5, 6, 6, 6, 6, 5, 6, 6, 6, 5, 6, 6, 6, 5, 6, 6, 6, 5, 6, 6, 6, 5, 6, 6, 5, 6, 5, 6, 6, 5, 6, 6, 6, 5, 6, 5, 6, 6, 5, 6, 6, 5, 6, 5, 6, 5, 6, 5, 6, 5, 6, 6, 5, 5, 6, 5, 6, 6, 5, 5, 6, 5, 6, 6, 5, 5, 6, 5, 6, 5, 6, 5, 5, 6, 5, 6, 5, 6, 5, 5, 6, 5, 5, 6, 5, 5, 6, 5, 5, 6, 5, 5, 6, 5, 5, 6, 5, 5, 6, 5, 5, 6, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 6, 5, 4, 5, 5, 5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 5, 5, 5, 5, 4, 5, 5, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 4, 4]
+            listx = x
+            self.lpos = len(self.followlist)
+            listy = y
+            for i in self.followlist:
+                if i == 1:
+                    listx = listx + 1
+                    listy = listy - 1
+                    self.followlinelist.append([listx, listy])
+                elif i == 2:
+                    listx = listx + 1
+                    self.followlinelist.append([listx, listy])
+                elif i == 3:
+                    listx = listx + 1
+                    listy = listy + 1
+                    self.followlinelist.append([listx, listy])
+                elif i == 4:
+                    listy = listy + 1
+                    self.followlinelist.append([listx, listy])
+                elif i == 5:
+                    listx = listx - 1
+                    listy = listy + 1
+                    self.followlinelist.append([listx, listy])
+                elif i == 6:
+                    listx = listx - 1
+                    self.followlinelist.append([listx, listy])
+                elif i == 7:
+                    listx = listx - 1
+                    listy = listy - 1
+                    self.followlinelist.append([listx, listy])
+                elif i == 8:
+                    listy = listy - 1
+                    self.followlinelist.append([listx, listy])
+                else:
+                    print("fail")
+    def mapbeta(self, x, y, use):
+        pass
+    def mapgammer(self, x, y, use):
+        pass
+    def mapdelta(self, x, y, use):
+        pass
+    def mapx(self, x, y, use):
+        pass
+    def mapplus(self, x, y, use):
+        pass
+    def mapwurzel(self, x, y, use):
+        pass
+    def mapminus(self, x, y, use):
+        pass
+    def mapaquad(self, x, y, use):
+        pass
+    def mapwurzela(self, x, y, use):
+        pass
+    def mapxquad(self, x, y, use):
+        pass
+    def mapwuzelx(self, x, y, use):
+        pass
+    def mapEistmcquad(self, x, y, use):
+        pass
+    def regelinfo(self):
+        tkinter.messagebox.showinfo("Regeln", "Es ist ein normales TD also vom eingang kommen Errors(gegner) und du musst sie mit Türmen daran hindern, dass sie ins Ziel kommen. Doch du hast nur einen Turm: das X. Wenn du auf ihn drückst siehst du einen Taschenrechner rechts in ihn kannst du formeln von Formen eingeben und dann wird der Turm die Form oder der Körper. Jede Form(Körper) kann was anderes so wie x² der Typisch Turm ist(schießt ok schnell in okeher Reichweite mit okehem Schaden, no effekts) oder x*wurzel2 ein sniper(hohe Reichweite, heher schaden, langsam). Die self.restlichen türme finden sie von selbst. WICHTIG die shadows sind schatten von Super Türmen finde Ihre formeln und sieh was sie können! Viel spass!")
+    def beenden(self):
+        self.quit = True
+    def sgradhandler(self, text):
+        self.schwierg = text
+        if self.schwierg == "Leicht":
+            pass
+        if self.schwierg == "Mittel":
+            pass
+        if self.schwierg == "Schwer":
+            pass
+    def Weiter(self):
+        self.weiter = True
+    def mapmenue(self):
+        self.DeletestartW()
+        self.backom = Button(text = "zurück", command = self.backm, font=("Arial", 15))
+        self.Wbackom = self.cv.create_window(50, 50, window=self.backom)
+    def seeshadows(self):
+        self.DeletestartW()
+        self.backos = Button(text = "zurück", command = self.backs, font=("Arial", 15))
+        self.Wbackos = self.cv.create_window(50, 50, window=self.backos)
+    def backs(self):
+        self.cv.delete(self.Wbackos)
+        self.makestartwidgets()
+    def backm(self):
+        self.cv.delete(self.Wbackom)
+        self.makestartwidgets()
+    def giu(self):
+        self.end = True
+        if self.rechneractive == True:
+            self.schließen()
+        self.cv.delete(self.Wgiveup)
+        self.cv.delete(self.Wtower)
+        self.cv.delete(self.Wgostop)
+        self.cv.delete(self.money)
+        self.cv.delete(self.health)
+        for tower in self.towerlist:
+            lines = tower[0]
+            for i in lines:
+                self.cv.delete(i)
+        for enemy in self.enemylist:
+            objekt = enemy[1]
+            self.cv.delete(objekt)
+        self.enemylist.clear()
+        self.towerlist.clear()
+        if self.mapchosen == "alpha":
+            self.cv.delete(self.alphamappart1)
+            self.cv.delete(self.alphamappart2)
+            self.cv.delete(self.alphamappart3)
+        elif self.mapchosen == "beta":
+            pass
+        elif self.mapchosen == "gammer":
+            pass
+        elif self.mapchosen == "delta":
+            pass
+        elif self.mapchosen == "x":
+            pass
+        elif self.mapchosen == "+":
+            pass
+        elif self.mapchosen == "-":
+            pass
+        elif self.mapchosen == "wurzel":
+            pass
+        elif self.mapchosen == "a²":
+            pass
+        elif self.mapchosen == "x²":
+            pass
+        elif self.mapchosen == "wurzela":
+            pass
+        elif self.mapchosen == "wurzelx":
+            pass
+        elif self.mapchosen == "E=mc²":
+            pass
+        self.makestartwidgets()
+    def click(self, event):
+        kolision = False
+        for i in range(len(self.towerlist)):
+            tower = self.towerlist[i]
+            xbutton = tower[1]
+            ybutton = tower[2]
+            if sqrt((self.xnow-xbutton) ** 2 + (self.ynow-ybutton) ** 2) < 10:
+                if self.rechneractive:
+                    self.schließen()
+                self.id = i
+                self.rechner()
+        for point in self.followlinelist:
+            linex = point[0]
+            liney = point[1]
+            if sqrt((self.xnow-linex) ** 2 + (self.ynow-liney) ** 2) < 25:
+                kolision = True
+        for point in self.towerlist:
+            linex = point[1]
+            liney = point[2]
+            if sqrt((self.xnow-linex) ** 2 + (self.ynow-liney) ** 2) < 25:
+                kolision = True
+        if self.bindtower == True:
+            self.bindtower = False
+            Xm = self.xnow % 10
+            self.cv.delete(self.crossline1)
+            self.cv.delete(self.crossline2)
+            if Xm < 5:
+                self.xnow = self.xnow - Xm
+            if Xm > 5:
+                self.xnow = self.xnow + (10-Xm)
+            Ym = self.ynow % 10
+            if Ym < 5:
+                self.ynow = self.ynow - Ym
+            if Ym > 5:
+                self.ynow = self.ynow + (10-Ym)
+            for tower in self.towerlist:
+                xtower = tower[1]
+                ytower = tower[2]
+                if sqrt((self.xnow-xtower) ** 2 + (self.ynow-ytower) ** 2) < 20:
+                    kolision = True
+            if kolision == False:
+                self.towerline1 = self.cv.create_line(self.xnow-10, self.ynow-10, self.xnow+10, self.ynow+10, fill="black", width=5)
+                self.towerline2 = self.cv.create_line(self.xnow-10, self.ynow+10, self.xnow+10, self.ynow-10, fill="black", width=5)
+                self.towerlist.append([[self.towerline1, self.towerline2], self.xnow, self.ynow, ["x"], None, 0, 0, 0, 0, []])
+            else:
+                print("not allowed position")
+    def rechner(self):
+        tower = self.towerlist[self.id]
+        x = tower[1]
+        y = tower[2]
+        Range = tower[7]
+        self.save = 0+self.logic
+        self.schlussl=list()
+        self.formel = tower[3]
+        self.schlussl.extend(self.formel)
+        self.cost = 7*(len(self.formel)-1)
+        self.rechneractive = True
+        self.l1 = " "
+        self.l2 = " "
+        self.l3 = " "
+        self.l4 = " "
+        self.l5 = " "
+        self.l6 = " "
+        self.l7 = " "
+        self.l8 = " "
+        self.l9 = " "
+        if len(self.formel) == 1:
+            self.writer = 1
+            self.l1 = self.formel
+        elif len(self.formel) == 2:
+            self.writer = 2
+            self.l1 = self.formel[0]
+            self.l2 = self.formel[1]
+        elif len(self.formel) == 3:
+            self.writer = 3
+            self.l1 = self.formel[0]
+            self.l2 = self.formel[1]
+            self.l3 = self.formel[2]
+        elif len(self.formel) == 4:
+            self.writer = 4
+            self.l1 = self.formel[0]
+            self.l2 = self.formel[1]
+            self.l3 = self.formel[2]
+            self.l4 = self.formel[3]
+        elif len(self.formel) == 5:
+            self.writer = 5
+            self.l1 = self.formel[0]
+            self.l2 = self.formel[1]
+            self.l3 = self.formel[2]
+            self.l4 = self.formel[3]
+            self.l5 = self.formel[4]
+        elif len(self.formel) == 6:
+            self.writer = 6
+            self.l1 = self.formel[0]
+            self.l2 = self.formel[1]
+            self.l3 = self.formel[2]
+            self.l4 = self.formel[3]
+            self.l5 = self.formel[4]
+            self.l6 = self.formel[5]
+        elif len(self.formel) == 7:
+            self.writer = 7
+            self.l1 = self.formel[0]
+            self.l2 = self.formel[1]
+            self.l3 = self.formel[2]
+            self.l4 = self.formel[3]
+            self.l5 = self.formel[4]
+            self.l6 = self.formel[5]
+            self.l7 = self.formel[6]
+        elif len(self.formel) == 8:
+            self.writer = 8
+            self.l1 = self.formel[0]
+            self.l2 = self.formel[1]
+            self.l3 = self.formel[2]
+            self.l4 = self.formel[3]
+            self.l5 = self.formel[4]
+            self.l6 = self.formel[5]
+            self.l7 = self.formel[6]
+            self.l8 = self.formel[7]
+        elif len(self.formel) == 9:
+            self.writer = 9
+            self.l1 = self.formel[0]
+            self.l2 = self.formel[1]
+            self.l3 = self.formel[2]
+            self.l4 = self.formel[3]
+            self.l5 = self.formel[4]
+            self.l6 = self.formel[5]
+            self.l7 = self.formel[6]
+            self.l8 = self.formel[7]
+            self.l9 = self.formel[8]
+        else:
+            self.rest = self.formel[9:len(self.formel)]
+            self.writer = len(self.formel)
+            if self.writer >= 10:
+                self.l1 = self.formel[0+self.writer-10]
+                self.l2 = self.formel[1+self.writer-10]
+                self.l3 = self.formel[2+self.writer-10]
+                self.l4 = self.formel[3+self.writer-10]
+                self.l5 = self.formel[4+self.writer-10]
+                self.l6 = self.formel[5+self.writer-10]
+                self.l7 = self.formel[6+self.writer-10]
+                self.l8 = self.formel[7+self.writer-10]
+                self.l9 = self.formel[8+self.writer-10]
+            else:
+                self.l1 = self.formel[0]
+                self.l2 = self.formel[1]
+                self.l3 = self.formel[2]
+                self.l4 = self.formel[3]
+                self.l5 = self.formel[4]
+                self.l6 = self.formel[5]
+                self.l7 = self.formel[6]
+                self.l8 = self.formel[7]
+                self.l9 = self.formel[8]
+        self.rechnerlist = list()
+        cirkle = self.cv.create_oval((x-Range),(y-Range),(x+Range),(y+Range), outline="black")
+        self.rechnerlist.append(cirkle)
+        plus = Button(text="+", command=self.plus, font=("Arial", 9))
+        minus = Button(text="-", command=self.minus, font=("Arial", 9))
+        mal = Button(text="*", command=self.mal, font=("Arial", 9))
+        div = Button(text="/", command=self.div, font=("Arial", 9))
+        hoch = Button(text="^", command=self.hoch, font=("Arial", 9))
+        wurzel = Button(text=u"\u221A", command=self.wurzel, font=("Arial", 9))
+        variable = Button(text="x", command=self.variable, font=("Arial", 9))
+        pi = Button(text=u"\u03C0", command=self.pi, font=("Arial", 9))
+        clear = Button(text="clear", command=self.verkaufen, font=("Arial", 9))
+        off = Button(text="off", command = self.schließen, font=("Arial", 9))
+        one = Button(text="1", command=self.eins, font=("Arial", 9))
+        two = Button(text="2", command=self.zwei, font=("Arial", 9))
+        three = Button(text="3", command=self.drei, font=("Arial", 9))
+        four = Button(text="4", command=self.vier, font=("Arial", 9))
+        five = Button(text="5", command=self.fünf, font=("Arial", 9))
+        six = Button(text="6", command=self.sechs, font=("Arial", 9))
+        seven = Button(text="7", command=self.sieben, font=("Arial", 9))
+        eight = Button(text="8", command=self.acht, font=("Arial", 9))
+        nine = Button(text="9", command=self.neun, font=("Arial", 9))
+        zero = Button(text="0", command=self.null, font=("Arial", 9))
+        kauf = Button(text="(", command=self.klauf, font=("Arial", 9))
+        kzu = Button(text=")", command=self.klzu, font=("Arial", 9))
+        dele = Button(text="del", command=self.delete, font=("Arial", 9))
+        komma = Button(text=",", command=self.komma, font=("Arial", 9))
+        links = Button(text="<--", command=self.links, font=("Arial", 9))
+        rechts = Button(text="-->", command=self.rechts, font=("Arial", 9))
+        ist = Button(text="=", command=self.istgleich, font=("Arial", 9))
+        if x > 650:
+            self.n1 = Label(text=self.l1, font=("Arial", 9))
+            self.n1.config(bg="darkgrey")
+            self.number1 = self.cv.create_window(35, 107, window=self.n1)
+            self.n2 = Label(text=self.l2, font=("Arial", 9))
+            self.n2.config(bg="darkgrey")
+            self.number2 = self.cv.create_window(55, 107, window=self.n2)
+            self.n3 = Label(text=self.l3, font=("Arial", 9))
+            self.n3.config(bg="darkgrey")
+            self.number3 = self.cv.create_window(75, 107, window=self.n3)
+            self.n4 = Label(text=self.l4, font=("Arial", 9))
+            self.n4.config(bg="darkgrey")
+            self.number4 = self.cv.create_window(95, 107, window=self.n4)
+            self.n5 = Label(text=self.l5, font=("Arial", 9))
+            self.n5.config(bg="darkgrey")
+            self.number5 = self.cv.create_window(115, 107, window=self.n5)
+            self.n6 = Label(text=self.l6, font=("Arial", 9))
+            self.n6.config(bg="darkgrey")
+            self.number6 = self.cv.create_window(135, 107, window=self.n6)
+            self.n7 = Label(text=self.l7, font=("Arial", 9))
+            self.n7.config(bg="darkgrey")
+            self.number7 = self.cv.create_window(155, 107, window=self.n7)
+            self.n8 = Label(text=self.l8, font=("Arial", 9))
+            self.n8.config(bg="darkgrey")
+            self.number8 = self.cv.create_window(175, 107, window=self.n8)
+            self.n9 = Label(text=self.l9, font=("Arial", 9))
+            self.n9.config(bg="darkgrey")
+            self.number9 = self.cv.create_window(195, 107, window=self.n9)
+            if self.writer == 1:
+                self.writerl = self.cv.create_line(45, 100, 45, 115, width=2, fill="black")
+            elif self.writer == 2:
+                self.writerl = self.cv.create_line(65, 100, 65, 115, width=2, fill="black")
+            elif self.writer == 3:
+                self.writerl = self.cv.create_line(85, 100, 85, 115, width=2, fill="black")
+            elif self.writer == 4:
+                self.writerl = self.cv.create_line(105, 100, 105, 115, width=2, fill="black")
+            elif self.writer == 5:
+                self.writerl = self.cv.create_line(125, 100, 125, 115, width=2, fill="black")
+            elif self.writer == 6:
+                self.writerl = self.cv.create_line(145, 100, 145, 115, width=2, fill="black")
+            elif self.writer == 7:
+                self.writerl = self.cv.create_line(165, 100, 165, 115, width=2, fill="black")
+            elif self.writer == 8:
+                self.writerl = self.cv.create_line(185, 100, 185, 115, width=2, fill="black")
+            else:
+                self.writerl = self.cv.create_line(205, 100, 205, 115, width=2, fill="black")
+            bg = self.cv.create_rectangle(0, 70, 250, 450, fill="lightgrey")
+            self.rechnerlist.append(bg)
+            labelbg = self.cv.create_rectangle(20, 95, 220, 120, fill="darkgrey")
+            self.rechnerlist.append(labelbg)
+            plusb = self.cv.create_window(20, 150, window=plus)
+            self.rechnerlist.append(plusb)
+            minusb = self.cv.create_window(20, 200, window=minus)
+            self.rechnerlist.append(minusb)
+            malb = self.cv.create_window(20, 250, window=mal)
+            self.rechnerlist.append(malb)
+            divb = self.cv.create_window(20, 300, window=div)
+            self.rechnerlist.append(divb)
+            hochb = self.cv.create_window(50, 300, window=hoch)
+            self.rechnerlist.append(hochb)
+            wurzelb = self.cv.create_window(40, 350, window=wurzel)
+            self.rechnerlist.append(wurzelb)
+            variableb = self.cv.create_window(100, 350, window=variable)
+            self.rechnerlist.append(variableb)
+            pib = self.cv.create_window(150, 350, window=pi)
+            self.rechnerlist.append(pib)
+            clearb = self.cv.create_window(200, 150, window=clear)
+            self.rechnerlist.append(clearb)
+            offb = self.cv.create_window(200, 350, window=off)
+            self.rechnerlist.append(offb)
+            oneb = self.cv.create_window(50, 150, window=one)
+            self.rechnerlist.append(oneb)
+            twob = self.cv.create_window(100, 150, window=two)
+            self.rechnerlist.append(twob)
+            threeb = self.cv.create_window(150, 150, window=three)
+            self.rechnerlist.append(threeb)
+            fourb = self.cv.create_window(50, 200, window=four)
+            self.rechnerlist.append(fourb)
+            fiveb = self.cv.create_window(100, 200, window=five)
+            self.rechnerlist.append(fiveb)
+            sixb = self.cv.create_window(150, 200, window=six)
+            self.rechnerlist.append(sixb)
+            sevenb = self.cv.create_window(50, 250, window=seven)
+            self.rechnerlist.append(sevenb)
+            eightb = self.cv.create_window(100, 250, window=eight)
+            self.rechnerlist.append(eightb)
+            nineb = self.cv.create_window(150, 250, window=nine)
+            self.rechnerlist.append(nineb)
+            zerob = self.cv.create_window(100, 300, window=zero)
+            self.rechnerlist.append(zerob)
+            kaufb = self.cv.create_window(200, 250, window=kauf)
+            self.rechnerlist.append(kaufb)
+            kzub = self.cv.create_window(200, 300, window=kzu)
+            self.rechnerlist.append(kzub)
+            deleb = self.cv.create_window(200, 200, window=dele)
+            self.rechnerlist.append(deleb)
+            kommab = self.cv.create_window(150, 300, window=komma)
+            self.rechnerlist.append(kommab)
+            linksb = self.cv.create_window(50, 400, window=links)
+            self.rechnerlist.append(linksb)
+            rechtsb = self.cv.create_window(150, 400, window=rechts)
+            self.rechnerlist.append(rechtsb)
+            istb = self.cv.create_window(200, 400, window=ist)
+            self.rechnerlist.append(istb)
+        else:
+            self.n1 = Label(text=self.l1, font=("Arial", 9))
+            self.n1.config(bg="darkgrey")
+            self.number1 = self.cv.create_window(1085, 107, window=self.n1)
+            self.n2 = Label(text=self.l2, font=("Arial", 9))
+            self.n2.config(bg="darkgrey")
+            self.number2 = self.cv.create_window(1105, 107, window=self.n2)
+            self.n3 = Label(text=self.l3, font=("Arial", 9))
+            self.n3.config(bg="darkgrey")
+            self.number3 = self.cv.create_window(1125, 107, window=self.n3)
+            self.n4 = Label(text=self.l4, font=("Arial", 9))
+            self.n4.config(bg="darkgrey")
+            self.number4 = self.cv.create_window(1145, 107, window=self.n4)
+            self.n5 = Label(text=self.l5, font=("Arial", 9))
+            self.n5.config(bg="darkgrey")
+            self.number5 = self.cv.create_window(1165, 107, window=self.n5)
+            self.n6 = Label(text=self.l6, font=("Arial", 9))
+            self.n6.config(bg="darkgrey")
+            self.number6 = self.cv.create_window(1185, 107, window=self.n6)
+            self.n7 = Label(text=self.l7, font=("Arial", 9))
+            self.n7.config(bg="darkgrey")
+            self.number7 = self.cv.create_window(1205, 107, window=self.n7)
+            self.n8 = Label(text=self.l8, font=("Arial", 9))
+            self.n8.config(bg="darkgrey")
+            self.number8 = self.cv.create_window(1225, 107, window=self.n8)
+            self.n9 = Label(text=self.l9, font=("Arial", 9))
+            self.n9.config(bg="darkgrey")
+            self.number9 = self.cv.create_window(1245, 107, window=self.n9)
+            if self.writer == 1:
+                self.writerl = self.cv.create_line(1105, 100, 1105, 115, width=2, fill="black")
+            elif self.writer == 2:
+                self.writerl = self.cv.create_line(1115, 100, 1115, 115, width=2, fill="black")
+            elif self.writer == 3:
+                self.writerl = self.cv.create_line(1135, 100, 1135, 115, width=2, fill="black")
+            elif self.writer == 4:
+                self.writerl = self.cv.create_line(1155, 100, 1155, 115, width=2, fill="black")
+            elif self.writer == 5:
+                self.writerl = self.cv.create_line(1175, 100, 1175, 115, width=2, fill="black")
+            elif self.writer == 6:
+                self.writerl = self.cv.create_line(1195, 100, 1195, 115, width=2, fill="black")
+            elif self.writer == 7:
+                self.writerl = self.cv.create_line(1215, 100, 1215, 115, width=2, fill="black")
+            elif self.writer == 8:
+                self.writerl = self.cv.create_line(1235, 100, 1235, 115, width=2, fill="black")
+            else:
+                self.writerl = self.cv.create_line(1255, 100, 1255, 115, width=2, fill="black")
+            bg = self.cv.create_rectangle(1050, 70, 1300, 450, fill="lightgrey")
+            self.rechnerlist.append(bg)
+            labelbg = self.cv.create_rectangle(1070, 95, 1270, 120, fill="darkgrey")
+            self.rechnerlist.append(labelbg)
+            plusb = self.cv.create_window(1070, 150, window=plus)
+            self.rechnerlist.append(plusb)
+            minusb = self.cv.create_window(1070, 200, window=minus)
+            self.rechnerlist.append(minusb)
+            malb = self.cv.create_window(1070, 250, window=mal)
+            self.rechnerlist.append(malb)
+            divb = self.cv.create_window(1070, 300, window=div)
+            self.rechnerlist.append(divb)
+            hochb = self.cv.create_window(1100, 300, window=hoch)
+            self.rechnerlist.append(hochb)
+            wurzelb = self.cv.create_window(1090, 350, window=wurzel)
+            self.rechnerlist.append(wurzelb)
+            variableb = self.cv.create_window(1150, 350, window=variable)
+            self.rechnerlist.append(variableb)
+            pib = self.cv.create_window(1200, 350, window=pi)
+            self.rechnerlist.append(pib)
+            clearb = self.cv.create_window(1250, 150, window=clear)
+            self.rechnerlist.append(clearb)
+            offb = self.cv.create_window(1250, 350, window=off)
+            self.rechnerlist.append(offb)
+            oneb = self.cv.create_window(1100, 150, window=one)
+            self.rechnerlist.append(oneb)
+            twob = self.cv.create_window(1150, 150, window=two)
+            self.rechnerlist.append(twob)
+            threeb = self.cv.create_window(1200, 150, window=three)
+            self.rechnerlist.append(threeb)
+            fourb = self.cv.create_window(1100, 200, window=four)
+            self.rechnerlist.append(fourb)
+            fiveb = self.cv.create_window(1150, 200, window=five)
+            self.rechnerlist.append(fiveb)
+            sixb = self.cv.create_window(1200, 200, window=six)
+            self.rechnerlist.append(sixb)
+            sevenb = self.cv.create_window(1100, 250, window=seven)
+            self.rechnerlist.append(sevenb)
+            eightb = self.cv.create_window(1150, 250, window=eight)
+            self.rechnerlist.append(eightb)
+            nineb = self.cv.create_window(1200, 250, window=nine)
+            self.rechnerlist.append(nineb)
+            zerob = self.cv.create_window(1150, 300, window=zero)
+            self.rechnerlist.append(zerob)
+            kaufb = self.cv.create_window(1250, 250, window=kauf)
+            self.rechnerlist.append(kaufb)
+            kzub = self.cv.create_window(1250, 300, window=kzu)
+            self.rechnerlist.append(kzub)
+            deleb = self.cv.create_window(1250, 200, window=dele)
+            self.rechnerlist.append(deleb)
+            kommab = self.cv.create_window(1200, 300, window=komma)
+            self.rechnerlist.append(kommab)
+            linksb = self.cv.create_window(1100, 400, window=links)
+            self.rechnerlist.append(linksb)
+            rechtsb = self.cv.create_window(1200, 400, window=rechts)
+            self.rechnerlist.append(rechtsb)
+            istb = self.cv.create_window(1250, 400, window=ist)
+            self.rechnerlist.append(istb)
+    def movetower(self, event):
+        self.overwidg = event.widget
+        if type(self.overwidg) == type(self.cv):
+            self.xlast = self.xnow
+            self.ylast = self.ynow
+            self.xnow = event.x
+            self.ynow = event.y
+            if self.bindtower == True:
+                self.cv.move(self.crossline1, self.xnow-self.xlast, 0)
+                self.cv.move(self.crossline1, 0, self.ynow-self.ylast)
+                self.cv.move(self.crossline2, self.xnow-self.xlast, 0)
+                self.cv.move(self.crossline2, 0, self.ynow-self.ylast)
+    def plus(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "+")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def minus(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "-")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def mal(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "*")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def div(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "/")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def hoch(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "^")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def wurzel(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, u"\u221A")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def variable(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "x")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def pi(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, u"\u03C0")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def verkaufen(self):
+        pass
+    def schließen(self):
+        x = 0
+        self.formel=list()
+        tower=self.towerlist[self.id]
+        tower[3]= self.schlussl
+        self.logic = self.save
+        self.relodel()
+        for i in self.rechnerlist:
+            Widget = self.rechnerlist[x]
+            self.cv.delete(Widget)
+            x += 1
+        self.rechnerlist.clear
+        self.cv.delete(self.number1)
+        self.cv.delete(self.number2)
+        self.cv.delete(self.number3)
+        self.cv.delete(self.number4)
+        self.cv.delete(self.number5)
+        self.cv.delete(self.number6)
+        self.cv.delete(self.number7)
+        self.cv.delete(self.number8)
+        self.cv.delete(self.number9)
+        self.cv.delete(self.writerl)
+        self.rechneractive = False
+    def eins(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "1")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def zwei(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "2")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def drei(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "3")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def vier(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "4")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def fünf(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "5")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def sechs(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "6")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def sieben(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "7")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def acht(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "8")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def neun(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "9")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def null(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "0")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def klauf(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, "(")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def klzu(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, ")")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def delete(self):
+        if len(self.formel)>1:
+            del self.formel[self.writer-1]
+            self.writer-=1
+            self.formelerweit()
+            if len(self.formel)>1:
+                self.cost = 7*len(self.formel)
+            else:
+                self.cost = 0
+            self.logic+=self.cost
+    def komma(self):
+        if self.logic >= self.cost:
+            self.logic-=self.cost
+            self.formel.insert(self.writer, ",")
+            self.writer+=1
+            self.formelerweit()
+            self.cost = 7*len(self.formel)
+    def links(self):
+        if self.writer>0:
+            self.writer-=1
+            self.formelerweit()
+    def rechts(self):
+        if self.writer<len(self.formel):
+            self.writer+=1
+            self.formelerweit()
+    def istgleich(self):
+        x = 0
+        for i in self.rechnerlist:
+            Widget = self.rechnerlist[x]
+            self.cv.delete(Widget)
+            x += 1
+        self.rechnerlist.clear
+        self.cv.delete(self.number1)
+        self.cv.delete(self.number2)
+        self.cv.delete(self.number3)
+        self.cv.delete(self.number4)
+        self.cv.delete(self.number5)
+        self.cv.delete(self.number6)
+        self.cv.delete(self.number7)
+        self.cv.delete(self.number8)
+        self.cv.delete(self.number9)
+        self.cv.delete(self.writerl)
+        self.rechneractive=False
+        self.formelzuturm()
+    def formelzuturm(self):
+        a = len(self.formel)
+        befor = None
+        error=0
+        beforpoint=None
+        realformel = list()
+        b=0
+        while a != 0:
+            number = self.formel[len(self.formel)-a]
+            if befor==None:
+                if number =="0" or number=="1" or number=="2" or number=="3" or number=="4" or number=="5" or number=="6" or number=="7" or number=="8" or number=="9":
+                    befor = int(number)
+                else:
+                    befor = number
+            else:
+                if befor=="-" or befor=="+" or befor=="*" or befor=="/" or befor=="^" or befor==u"\u221A":
+                    if number =="0" or number=="1" or number=="2" or number=="3" or number=="4" or number=="5" or number=="6" or number=="7" or number=="8" or number=="9":
+                        realformel.append(befor)
+                        befor=int(number)
+                    elif number=="x" or number==u"\u03C0" or number == u"\u221A":
+                        realformel.append(befor)
+                        befor=number
+                    elif number == "(":
+                        realformel.append(befor)
+                        befor="("
+                        b+=1
+                    else:
+                        error+=1
+                elif befor=="x" or befor==u"\u03C0":
+                    if number=="-" or number=="+" or number=="*" or number=="/" or number=="^" or number==u"\u221A":
+                        realformel.append(befor)
+                        befor=number
+                    elif number == ")"and b > 0:
+                        realformel.append(beforpoint)
+                        beforpoint=None
+                        befor=number
+                    else:
+                        error+=1
+                elif befor=="(":
+                    realformel.append(befor)
+                    if number =="0" or number=="1" or number=="2" or number=="3" or number=="4" or number=="5" or number=="6" or number=="7" or number=="8" or number=="9":
+                        befor = int(number)
+                    else:
+                        befor = number
+                    b+=1
+                elif befor==")":
+                    realformel.append(befor)
+                    if number =="0" or number=="1" or number=="2" or number=="3" or number=="4" or number=="5" or number=="6" or number=="7" or number=="8" or number=="9":
+                        befor = int(number)
+                    else:
+                        befor = number
+                    b-=1
+                elif type(befor)==int and beforpoint==None:
+                    if number =="0" or number=="1" or number=="2" or number=="3" or number=="4" or number=="5" or number=="6" or number=="7" or number=="8" or number=="9":
+                        befor=str(befor)
+                        befor=int(befor+number)
+                    elif number=="-" or number=="+" or number=="*" or number=="/" or number=="^" or number==u"\u221A":
+                        realformel.append(befor)
+                        befor=number
+                    elif number==",":
+                        beforpoint = befor
+                        befor = "No"
+                    elif number == ")"and b > 0:
+                        realformel.append(befor)
+                        befor=number
+                    else:
+                        error+=1
+                elif befor=="No" and beforpoint!=None:
+                    if number =="0" or number=="1" or number=="2" or number=="3" or number=="4" or number=="5" or number=="6" or number=="7" or number=="8" or number=="9":
+                        befor = int(number)
+                    elif number=="-" or number=="+" or number=="*" or number=="/" or number=="^" or number==u"\u221A":
+                        realformel.append(beforpoint)
+                        beforpoint=None
+                        befor=number
+                    elif number == ")"and b > 0:
+                        realformel.append(beforpoint)
+                        beforpoint=None
+                        b-=1
+                        befor=number
+                    else:
+                        error+=1
+                elif type(befor)==int and beforpoint!=None:
+                    if number =="0" or number=="1" or number=="2" or number=="3" or number=="4" or number=="5" or number=="6" or number=="7" or number=="8" or number=="9":
+                        befor=str(befor)
+                        befor=int(befor+number)
+                    elif number=="-" or number=="+" or number=="*" or number=="/" or number=="^" or number==u"\u221A":
+                        realformel.append(float(str(beforpoint) + "." + str(befor)))
+                        beforpoint=None
+                        befor = number
+                    elif number == ")"and b > 0:
+                        realformel.append(float(str(beforpoint) + "." + str(befor)))
+                        beforpoint=None
+                        b-=1
+                        befor = number
+                    else:
+                        error+=1
+                else:
+                    print("don't hack the game")
+                    self.giu()
+            a-=1
+        if type(befor)==int and beforpoint!=None:
+            if number =="0" or number=="1" or number=="2" or number=="3" or number=="4" or number=="5" or number=="6" or number=="7" or number=="8" or number=="9":
+                realformel.append(befor)
+            else:
+                error+=1
+        else:
+            realformel.append(number)
+        self.formel = realformel
+        if realformel[0:35] == [0.7,"*","x","*","(","(","x","^","2","-","(",0.7,"*","x",")","^",2,")","+","(",2,"*","x","^",2,"-","(",0.7,"*","x",")","^",2,")",")"]:
+            del realformel[0:35]
+            tower=self.towerlist[self.id]
+            new=list()
+            for i in tower[0]:
+                self.cv.delete(i)
+            formlist = (tower[1], tower[2]+5,(tower[1]-5), tower[2],tower[1], tower[2]-8,tower[1]+5,tower[2])
+            form = self.cv.create_polygon(formlist, fill="red", outline="black")
+            f = [form]
+            new.append(f)
+            new.extend(tower[1:4])
+            Type = "Snipe"
+            Recounter = 10
+            Counter = 25
+            Range = 50
+            Damage = 20
+            while realformel != []:
+                if realformel[0] == "+":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Damage *= (1.5 * realformel[1])
+                    Recounter /= (1.5 * realformel[1])
+                elif realformel[0] == "-":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Recounter *= (1.5 * realformel[1])
+                    Damage /= (1.5 * realformel[1])
+                elif realformel[0] == "*":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Damage *= (1.5 * realformel[1])
+                    Range /= (1.5 * realformel[1])
+                elif realformel[0] == "/":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Range *= (1.5 * realformel[1])
+                    Damage /= (1.5 * realformel[1])
+                elif realformel[0] == "^":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Range *= (1.5 * realformel[1])
+                    Recounter /= (1.5 * realformel[1])
+                elif realformel[0] == u"\u221A":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Recounter *= (1.5 * realformel[1])
+                    Range /= (1.5 * realformel[1])
+            del self.towerlist[self.id]
+            new.extend([Type, Recounter, Counter, Range, Damage, []])
+            self.towerlist.append(new)
+        elif realformel[0:10] == ["(", "x", "^", 2, "/", 4, ")", "*", u"\u221A", 3]:
+            del realformel[0:10]
+            tower=self.towerlist[self.id]
+            new=list()
+            for i in tower[0]:
+                self.cv.delete(i)
+            formlist = ((tower[1]+10), tower[2],(tower[1]-5), (tower[2]+10),(tower[1]-5), (tower[2]-10))
+            form = self.cv.create_polygon(formlist, fill="red", outline="black")
+            f = [form]
+            new.append(f)
+            new.extend(tower[1:4])
+            Type = "Snipe"
+            Recounter = 150
+            Counter = 150
+            Range = 150
+            Damage = 25
+            while realformel != []:
+                if realformel[0] == "+":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Damage *= (1.5 * realformel[1])
+                    Recounter /= (1.5 * realformel[1])
+                elif realformel[0] == "-":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Recounter *= (1.5 * realformel[1])
+                    Damage /= (1.5 * realformel[1])
+                elif realformel[0] == "*":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Damage *= (1.5 * realformel[1])
+                    Range /= (1.5 * realformel[1])
+                elif realformel[0] == "/":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Range *= (1.5 * realformel[1])
+                    Damage /= (1.5 * realformel[1])
+                elif realformel[0] == "^":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Range *= (1.5 * realformel[1])
+                    Recounter /= (1.5 * realformel[1])
+                elif realformel[0] == u"\u221A":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Recounter *= (1.5 * realformel[1])
+                    Range /= (1.5 * realformel[1])
+            del self.towerlist[self.id]
+            new.extend([Type, Recounter, Counter, Range, Damage, []])
+            self.towerlist.append(new)
+        elif realformel[0:10] == [3, "/", 2, "*", "x", "^", 2, "*", u"\u221A", 3]:
+            del realformel[0:10]
+            tower=self.towerlist[self.id]
+            new=list()
+            for i in tower[0]:
+                self.cv.delete(i)
+            formlist = ((tower[1]+10), tower[2],(tower[1]+5), (tower[2]+10),(tower[1]-5), (tower[2]+10),(tower[1]-10), tower[2],(tower[1]-5), (tower[2]-10),(tower[1]+5), (tower[2]-10))
+            form = self.cv.create_polygon(formlist, fill="red", outline="black")
+            f = [form]
+            new.append(f)
+            new.extend(tower[1:4])
+            Type = "rocket"
+            Recounter = 50
+            Counter = 50
+            Range = 100
+            Damage = 5
+            while realformel != []:
+                if realformel[0] == "+":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Damage *= (1.5 * realformel[1])
+                    Recounter /= (1.5 * realformel[1])
+                elif realformel[0] == "-":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Recounter *= (1.5 * realformel[1])
+                    Damage /= (1.5 * realformel[1])
+                elif realformel[0] == "*":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Damage *= (1.5 * realformel[1])
+                    Range /= (1.5 * realformel[1])
+                elif realformel[0] == "/":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Range *= (1.5 * realformel[1])
+                    Damage /= (1.5 * realformel[1])
+                elif realformel[0] == "^":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Range *= (1.5 * realformel[1])
+                    Recounter /= (1.5 * realformel[1])
+                elif realformel[0] == u"\u221A":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Recounter *= (1.5 * realformel[1])
+                    Range /= (1.5 * realformel[1])
+            del self.towerlist[self.id]
+            new.extend([Type, Recounter, Counter, Range, Damage, []])
+            self.towerlist.append(new)
+        elif realformel[0:5] == ["x", "^", 2, "*", u"\u03C0"]:
+            del realformel[0:5]
+            tower=self.towerlist[self.id]
+            new=list()
+            for i in tower[0]:
+                self.cv.delete(i)
+            form = self.cv.create_oval(tower[1]+10, tower[2]+10, tower[1]-10, tower[2]-10, fill="red", outline="black")
+            f = [form]
+            new.append(f)
+            new.extend(tower[1:4])
+            Type = "rangeup"
+            Recounter = 1
+            Counter = 1
+            Range = 100
+            Damage = 1
+            while realformel != []:
+                if realformel[0] == "+":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Damage *= (1.5 * realformel[1])
+                    Recounter /= (1.5 * realformel[1])
+                elif realformel[0] == "-":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Recounter *= (1.5 * realformel[1])
+                    Damage /= (1.5 * realformel[1])
+                elif realformel[0] == "*":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Damage *= (1.5 * realformel[1])
+                    Range /= (1.5 * realformel[1])
+                elif realformel[0] == "/":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Range *= (1.5 * realformel[1])
+                    Damage /= (1.5 * realformel[1])
+                elif realformel[0] == "^":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Range *= (1.5 * realformel[1])
+                    Recounter /= (1.5 * realformel[1])
+                elif realformel[0] == u"\u221A":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Recounter *= (1.5 * realformel[1])
+                    Range /= (1.5 * realformel[1])
+            del self.towerlist[self.id]
+            new.extend([Type, Recounter, Counter, Range, Damage, []])
+            self.towerlist.append(new)
+        elif realformel[0:3] == ["x", "^", 2]:
+            del realformel[0:3]
+            tower=self.towerlist[self.id]
+            new=list()
+            for i in tower[0]:
+                self.cv.delete(i)
+            formlist = ((tower[1]+10),(tower[2]+10),(tower[1]+10),(tower[2]-10),(tower[1]-10),(tower[2]-10),(tower[1]-10),(tower[2]+10))
+            form = self.cv.create_polygon(formlist, fill="red", outline="black")
+            f = [form]
+            new.append(f)
+            new.extend(tower[1:4])
+            Type = "Normal"
+            Recounter = 100
+            Counter = 100
+            Range = 75
+            Damage = 1
+            while realformel != []:
+                if realformel[0] == "+":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Damage *= (1.5 * realformel[1])
+                    Recounter /= (1.5 * realformel[1])
+                elif realformel[0] == "-":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Recounter *= (1.5 * realformel[1])
+                    Damage /= (1.5 * realformel[1])
+                elif realformel[0] == "*":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Damage *= (1.5 * realformel[1])
+                    Range /= (1.5 * realformel[1])
+                elif realformel[0] == "/":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Range *= (1.5 * realformel[1])
+                    Damage /= (1.5 * realformel[1])
+                elif realformel[0] == "^":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Range *= (1.5 * realformel[1])
+                    Recounter /= (1.5 * realformel[1])
+                elif realformel[0] == u"\u221A":
+                    a = True
+                    while a == True:
+                        if realformel[1] == "(" or realformel[1] == ")":
+                            del realformel[1]
+                        else:
+                            a = False
+                    Recounter *= (1.5 * realformel[1])
+                    Range /= (1.5 * realformel[1])
+            del self.towerlist[self.id]
+            new.extend([Type, Recounter, Counter, Range, Damage, []])
+            self.towerlist.append(new)
+    def formelerweit(self):
+        tower = self.towerlist[self.id]
+        x = tower[1]
+        self.cv.delete(self.number1)
+        self.cv.delete(self.number2)
+        self.cv.delete(self.number3)
+        self.cv.delete(self.number4)
+        self.cv.delete(self.number5)
+        self.cv.delete(self.number6)
+        self.cv.delete(self.number7)
+        self.cv.delete(self.number8)
+        self.cv.delete(self.number9)
+        self.l1 = " "
+        self.l2 = " "
+        self.l3 = " "
+        self.l4 = " "
+        self.l5 = " "
+        self.l6 = " "
+        self.l7 = " "
+        self.l8 = " "
+        self.l9 = " "
+        self.rest = list()
+        if len(self.formel) == 1:
+            self.l1 = self.formel
+        elif len(self.formel) == 2:
+            self.l1 = self.formel[0]
+            self.l2 = self.formel[1]
+        elif len(self.formel) == 3:
+            self.l1 = self.formel[0]
+            self.l2 = self.formel[1]
+            self.l3 = self.formel[2]
+        elif len(self.formel) == 4:
+            self.l1 = self.formel[0]
+            self.l2 = self.formel[1]
+            self.l3 = self.formel[2]
+            self.l4 = self.formel[3]
+        elif len(self.formel) == 5:
+            self.l1 = self.formel[0]
+            self.l2 = self.formel[1]
+            self.l3 = self.formel[2]
+            self.l4 = self.formel[3]
+            self.l5 = self.formel[4]
+        elif len(self.formel) == 6:
+            self.l1 = self.formel[0]
+            self.l2 = self.formel[1]
+            self.l3 = self.formel[2]
+            self.l4 = self.formel[3]
+            self.l5 = self.formel[4]
+            self.l6 = self.formel[5]
+        elif len(self.formel) == 7:
+            self.l1 = self.formel[0]
+            self.l2 = self.formel[1]
+            self.l3 = self.formel[2]
+            self.l4 = self.formel[3]
+            self.l5 = self.formel[4]
+            self.l6 = self.formel[5]
+            self.l7 = self.formel[6]
+        elif len(self.formel) == 8:
+            self.l1 = self.formel[0]
+            self.l2 = self.formel[1]
+            self.l3 = self.formel[2]
+            self.l4 = self.formel[3]
+            self.l5 = self.formel[4]
+            self.l6 = self.formel[5]
+            self.l7 = self.formel[6]
+            self.l8 = self.formel[7]
+        elif len(self.formel) == 9:
+            self.l1 = self.formel[0]
+            self.l2 = self.formel[1]
+            self.l3 = self.formel[2]
+            self.l4 = self.formel[3]
+            self.l5 = self.formel[4]
+            self.l6 = self.formel[5]
+            self.l7 = self.formel[6]
+            self.l8 = self.formel[7]
+            self.l9 = self.formel[8]
+        else:
+            if self.writer >= 10:
+                self.l1 = self.formel[1+self.writer-10]
+                self.l2 = self.formel[2+self.writer-10]
+                self.l3 = self.formel[3+self.writer-10]
+                self.l4 = self.formel[4+self.writer-10]
+                self.l5 = self.formel[5+self.writer-10]
+                self.l6 = self.formel[6+self.writer-10]
+                self.l7 = self.formel[7+self.writer-10]
+                self.l8 = self.formel[8+self.writer-10]
+                self.l9 = self.formel[9+self.writer-10]
+            else:
+                self.l1 = self.formel[0]
+                self.l2 = self.formel[1]
+                self.l3 = self.formel[2]
+                self.l4 = self.formel[3]
+                self.l5 = self.formel[4]
+                self.l6 = self.formel[5]
+                self.l7 = self.formel[6]
+                self.l8 = self.formel[7]
+                self.l9 = self.formel[8]
+        self.cv.delete(self.number1)
+        self.cv.delete(self.number2)
+        self.cv.delete(self.number3)
+        self.cv.delete(self.number4)
+        self.cv.delete(self.number5)
+        self.cv.delete(self.number6)
+        self.cv.delete(self.number7)
+        self.cv.delete(self.number8)
+        self.cv.delete(self.number9)
+        self.cv.delete(self.writerl)
+        if x > 650:
+            self.n1 = Label(text=self.l1, font=("Arial", 9))
+            self.n1.config(bg="darkgrey")
+            self.number1 = self.cv.create_window(35, 107, window=self.n1)
+            self.n2 = Label(text=self.l2, font=("Arial", 9))
+            self.n2.config(bg="darkgrey")
+            self.number2 = self.cv.create_window(55, 107, window=self.n2)
+            self.n3 = Label(text=self.l3, font=("Arial", 9))
+            self.n3.config(bg="darkgrey")
+            self.number3 = self.cv.create_window(75, 107, window=self.n3)
+            self.n4 = Label(text=self.l4, font=("Arial", 9))
+            self.n4.config(bg="darkgrey")
+            self.number4 = self.cv.create_window(95, 107, window=self.n4)
+            self.n5 = Label(text=self.l5, font=("Arial", 9))
+            self.n5.config(bg="darkgrey")
+            self.number5 = self.cv.create_window(115, 107, window=self.n5)
+            self.n6 = Label(text=self.l6, font=("Arial", 9))
+            self.n6.config(bg="darkgrey")
+            self.number6 = self.cv.create_window(135, 107, window=self.n6)
+            self.n7 = Label(text=self.l7, font=("Arial", 9))
+            self.n7.config(bg="darkgrey")
+            self.number7 = self.cv.create_window(155, 107, window=self.n7)
+            self.n8 = Label(text=self.l8, font=("Arial", 9))
+            self.n8.config(bg="darkgrey")
+            self.number8 = self.cv.create_window(175, 107, window=self.n8)
+            self.n9 = Label(text=self.l9, font=("Arial", 9))
+            self.n9.config(bg="darkgrey")
+            self.number9 = self.cv.create_window(195, 107, window=self.n9)
+            if self.writer == 1:
+                self.writerl = self.cv.create_line(45, 100, 45, 115, width=2, fill="black")
+            elif self.writer == 2:
+                self.writerl = self.cv.create_line(65, 100, 65, 115, width=2, fill="black")
+            elif self.writer == 3:
+                self.writerl = self.cv.create_line(85, 100, 85, 115, width=2, fill="black")
+            elif self.writer == 4:
+                self.writerl = self.cv.create_line(105, 100, 105, 115, width=2, fill="black")
+            elif self.writer == 5:
+                self.writerl = self.cv.create_line(125, 100, 125, 115, width=2, fill="black")
+            elif self.writer == 6:
+                self.writerl = self.cv.create_line(145, 100, 145, 115, width=2, fill="black")
+            elif self.writer == 7:
+                self.writerl = self.cv.create_line(165, 100, 165, 115, width=2, fill="black")
+            elif self.writer == 8:
+                self.writerl = self.cv.create_line(185, 100, 185, 115, width=2, fill="black")
+            else:
+                self.writerl = self.cv.create_line(205, 100, 205, 115, width=2, fill="black")
+        else:
+            self.n1 = Label(text=self.l1, font=("Arial", 9))
+            self.n1.config(bg="darkgrey")
+            self.number1 = self.cv.create_window(1085, 107, window=self.n1)
+            self.n2 = Label(text=self.l2, font=("Arial", 9))
+            self.n2.config(bg="darkgrey")
+            self.number2 = self.cv.create_window(1105, 107, window=self.n2)
+            self.n3 = Label(text=self.l3, font=("Arial", 9))
+            self.n3.config(bg="darkgrey")
+            self.number3 = self.cv.create_window(1125, 107, window=self.n3)
+            self.n4 = Label(text=self.l4, font=("Arial", 9))
+            self.n4.config(bg="darkgrey")
+            self.number4 = self.cv.create_window(1145, 107, window=self.n4)
+            self.n5 = Label(text=self.l5, font=("Arial", 9))
+            self.n5.config(bg="darkgrey")
+            self.number5 = self.cv.create_window(1165, 107, window=self.n5)
+            self.n6 = Label(text=self.l6, font=("Arial", 9))
+            self.n6.config(bg="darkgrey")
+            self.number6 = self.cv.create_window(1185, 107, window=self.n6)
+            self.n7 = Label(text=self.l7, font=("Arial", 9))
+            self.n7.config(bg="darkgrey")
+            self.number7 = self.cv.create_window(1205, 107, window=self.n7)
+            self.n8 = Label(text=self.l8, font=("Arial", 9))
+            self.n8.config(bg="darkgrey")
+            self.number8 = self.cv.create_window(1225, 107, window=self.n8)
+            self.n9 = Label(text=self.l9, font=("Arial", 9))
+            self.n9.config(bg="darkgrey")
+            self.number9 = self.cv.create_window(1245, 107, window=self.n9)
+            if self.writer == 1:
+                self.writerl = self.cv.create_line(1105, 100, 1105, 115, width=2, fill="black")
+            elif self.writer == 2:
+                self.writerl = self.cv.create_line(1115, 100, 1115, 115, width=2, fill="black")
+            elif self.writer == 3:
+                self.writerl = self.cv.create_line(1135, 100, 1135, 115, width=2, fill="black")
+            elif self.writer == 4:
+                self.writerl = self.cv.create_line(1155, 100, 1155, 115, width=2, fill="black")
+            elif self.writer == 5:
+                self.writerl = self.cv.create_line(1175, 100, 1175, 115, width=2, fill="black")
+            elif self.writer == 6:
+                self.writerl = self.cv.create_line(1195, 100, 1195, 115, width=2, fill="black")
+            elif self.writer == 7:
+                self.writerl = self.cv.create_line(1215, 100, 1215, 115, width=2, fill="black")
+            elif self.writer == 8:
+                self.writerl = self.cv.create_line(1235, 100, 1235, 115, width=2, fill="black")
+            else:
+                self.writerl = self.cv.create_line(1255, 100, 1255, 115, width=2, fill="black")
+    def relodel(self):
+        self.cv.delete(self.money)
+        self.ltext=str(self.logic)
+        self.showltext="logic="+self.ltext
+        self.showlog = Label(text=self.showltext, font=("Arial", 10))
+        self.money = self.cv.create_window(150, 30, window=self.showlog)
+        self.cv.delete(self.health)
+        self.ltext=str(self.h)
+        self.showhtext="health="+self.ltext
+        self.showh = Label(text=self.showhtext, font=("Arial", 10))
+        self.health = self.cv.create_window(300, 30, window=self.showh)
+    def taketower(self):
+        if self.logic >= 5:
+            self.logic-=5
+            self.bindtower = True
+            self.crossline1 = self.cv.create_line(self.xnow-10, self.ynow-10, self.xnow+10, self.ynow+10, fill="black", width=5)
+            self.crossline2 = self.cv.create_line(self.xnow-10, self.ynow+10, self.xnow+10, self.ynow-10, fill="black", width=5)
+    def StartGame(self):
+        self.DeletestartW()
+        self.run = False
+        self.rechneractive=False
+        self.logic = 8000
+        self.plist = list()
+        self.dlist=list()
+        self.h = 100
+        self.stop=False
+        self.end = False
+        self.lastround=False
+        self.cominglist = list()
+        self.round = 1
+        self.enemylist = list()
+        self.ltext=str(self.logic)
+        self.showltext="logic="+self.ltext
+        self.showlog = Label(text=self.showltext, font=("Arial", 10))
+        self.money = self.cv.create_window(150, 30, window=self.showlog)
+        self.ltext=str(self.h)
+        self.showhtext="health="+self.ltext
+        self.showh = Label(text=self.showhtext, font=("Arial", 10))
+        self.health = self.cv.create_window(300, 30, window=self.showh)
+        self.giveup = Button(text = "give up", command = self.giu, font=("Arial", 15))
+        self.Wgiveup = self.cv.create_window(50, 50, window=self.giveup)
+        self.tower= Button(text = " x ", command = self.taketower, font=("Arial", 40))
+        self.Wtower = self.cv.create_window(50, 550, window=self.tower)
+        self.gostop= Button(text = ">", command = self.gs, font=("Arial", 40))
+        self.Wgostop = self.cv.create_window(1200, 550, window=self.gostop)
+        if self.mapchosen == "alpha":
+            self.mapalpha(150, 50, "playmap")
+        elif self.mapchosen == "beta":
+            pass
+        elif self.mapchosen == "gammer":
+            pass
+        elif self.mapchosen == "delta":
+            pass
+        elif self.mapchosen == "x":
+            pass
+        elif self.mapchosen == "+":
+            pass
+        elif self.mapchosen == "-":
+            pass
+        elif self.mapchosen == "wurzel":
+            pass
+        elif self.mapchosen == "a²":
+            pass
+        elif self.mapchosen == "x²":
+            pass
+        elif self.mapchosen == "wurzela":
+            pass
+        elif self.mapchosen == "wurzelx":
+            pass
+        elif self.mapchosen == "E=mc²":
+            pass
+        self.mainloop()
+    def mainloop(self):
+        while self.end == False:
+            self.relodel()
+            if self.stop == False:
+                self.movee()
+                self.movep()
+                self.seeing()
+                self.chekend()
+                self.explorelod()
+            if self.enemylist == []:
+                if self.cominglist == []:
+                    self.startround()
+            self.after(1)
+            self.cv.update()
+    def movep(self):
+        alist = list()
+        i = 0
+        for p in self.plist:
+            pp = p[0]
+            px = p[1]
+            py = p[2]
+            pg = p[3]
+            pe = p[5]
+            t = False
+            if pe == "straight":
+                pass
+            elif pe<len(self.enemylist):
+                e = self.enemylist[pe]
+                ex = e[3]
+                ey = e[4]
+                for f in range(pg):
+                    if t == False:
+                        x=ex-px
+                        y=ey-py
+                        if x>=0:
+                            if y>=0:
+                                if x > y*4:
+                                    self.cv.move(pp, 0, 1)
+                                if y > x*4:
+                                    self.cv.move(pp, 1, 0)
+                                else:
+                                    self.cv.move(pp, 1, 1)
+                            else:
+                                y*=-1
+                                if x > y*4:
+                                    self.cv.move(pp, 0, -1)
+                                if y > x*4:
+                                    self.cv.move(pp, 1, 0)
+                                else:
+                                    self.cv.move(pp, 1, -1)
+                        else:
+                            x*=-1
+                            if y>=0:
+                                if x > y*4:
+                                    self.cv.move(pp, 0, 1)
+                                if y > x*4:
+                                    self.cv.move(pp, -1, 0)
+                                else:
+                                    self.cv.move(pp, -1, 1)
+                            else:
+                                y*=-1
+                                if x > y*4:
+                                    self.cv.move(pp, 0, -1)
+                                if y > x*4:
+                                    self.cv.move(pp, -1, 0)
+                                else:
+                                    self.cv.move(pp, -1, -1)
+                        pl = self.cv.bbox(pp)
+                        px = (pl[0]+pl[2])/2
+                        py = (pl[1]+pl[3])/2
+                        t = self.colisiond(i,0)
+                        if t == True:
+                            alist.append(p)
+            else:
+                self.cv.delete(pp)
+                alist.append(p)
+            i += 1
+        for i in alist:
+            self.plist.remove(i)
+    def chekend(self):
+        if self.h <=0:
+            self.giu()
+        if self.run == True:
+            if self.enemylist==[]:
+                self.run = False
+                if self.lastround == True:
+                    self.giu()
+    def seeing(self):
+        for i in range(len(self.towerlist)):
+            i = len(self.towerlist)-i
+            tower = self.towerlist[i-1]
+            towerx = tower[1]
+            towery = tower[2]
+            ru=0
+            if "ru"in tower[9]:
+                ru=int(tower[8]/10)
+                towerl = tower[9]
+                towerl.remove("ru")
+            if tower[4]=="range up":
+                for j in self.towerlist:
+                    t = self.towerlist[j]
+                    tx = t[1]
+                    ty = t[2]
+                    if sqrt((towerx-tx)**2+(towery-ty)**2)<=tower[7]+ru:
+                        tl = t[9]
+                        tl.append("ru")
+            else:
+                if tower[5]!=0:
+                    if tower[6]==0:
+                        shot=False
+                        for f in range(len(self.enemylist)):
+                            if shot == False:
+                                f = f-1
+                                enemy = self.enemylist[f]
+                                enemyp=enemy[0]
+                                enemyp=self.followlinelist[enemyp]
+                                enemyx=enemy[3]
+                                enemyy=enemy[4]
+                                if sqrt((towerx-enemyx)**2+(towery-enemyy)**2)<=tower[7]+ru:
+                                    if tower[4]=="Normal":
+                                        p = self.cv.create_oval(towerx+2,towery+2,towerx-2,towery-2, fill="green", outline="black")
+                                        plist = (p,towerx,towery,4,tower[8],f,0)
+                                        self.plist.append(plist)
+                                        shot = True
+                                    if tower[4]=="Snipe":
+                                        p = self.cv.create_line(towerx,towery,enemyx,enemyy, fill="blue", width=2)
+                                        if tower[8]>=enemy[2]:
+                                            self.cv.delete(enemy[1])
+                                            self.enemylist.remove(enemy)
+                                        else:
+                                            enemy[2]-=tower[8]
+                                        self.explosion.append([5,p])
+                                        shot = True
+                                    if tower[4]=="rocket":
+                                        p = self.cv.create_oval(towerx+2,towery+2,towerx-2,towery-2, fill="yellow", outline="black")
+                                        plist = (p,towerx,towery,2,tower[8],f,10)
+                                        self.plist.append(plist)
+                                        shot = True
+                        if shot == True:
+                            tower[6]=tower[5]
+                    else:
+                        tower[6]-=1
+    def colisiond(self,i, aoe):
+        pr=self.plist[i]
+        p = self.cv.bbox(pr[0])
+        px=(p[0]+p[2])/2
+        py=(p[1]+p[3])/2
+        a= False
+        for er in self.enemylist:
+            e = self.cv.bbox(er[1])
+            ex=(e[0]+e[2])/2
+            ey=(e[1]+e[3])/2
+            if sqrt((px-ex)**2+(py-ey)**2)<=13 + aoe:
+                if pr[6] == aoe:
+                    self.explosion.append([5,self.cv.create_oval(px+aoe,py+aoe,px-aoe,py-aoe,fill="red")])
+                    if er[2]<=pr[4]:
+                        self.cv.delete(er[1])
+                        self.enemylist.remove(er)
+                    else:
+                        er[2]-=pr[4]
+                    self.cv.delete(pr[0])
+                    a = True
+                else:
+                    a = self.colisiond(i,pr[6])
+                    break
+        return a
+    def explorelod(self):
+        for e in self.explosion:
+            e[0] = e[0]-1
+            if e[0]==0:
+                self.cv.delete(e[1])
+                self.explosion.remove(e)
+    def startround(self):
+        for i in self.plist:
+            self.cv.delete(i[0])
+        self.plist.clear()
+        for i in self.explosion:
+            self.cv.delete(i[1])
+        self.explosion.clear()
+        self.run = True
+        if self.round == 1:
+            self.cominglist=["N10", 50, "N10", 50, "N10", 50, "N10", 50, "N10", 50, "N10", 50, "N10", 50, "N10", 50, "N10", 50, "N10", 50, "N10", 50, "N10", 50, "N10", 50, "N10", 50, "N10", 50, "N10", 50, "N10", 50, "N10", 50, "N10", 50, "N10"]
+        elif self.round == 2:
+            self.cominglist=["N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10",25,"N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10", 25, "N10"]
+        elif self.round == 3:
+            self.cominglist=["S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50,"S10",25,"L25",50]
+        else:
+            self.lastround = True
+        self.round+=1
+        self.logic += 100*self.round
+    def movee(self):
+        if self.cominglist != []:
+            coming = self.cominglist[0]
+            if type(coming) == int:
+                if coming == 0:
+                    del self.cominglist[0]
+                else:
+                    self.cominglist[0]-=1
+            elif "N" in coming:
+                c = len(coming)
+                coming=coming[1:c]
+                live = int(coming)
+                err = self.cv.create_rectangle(self.x+10,self.y+10,self.x-10,self.y-10, fill="red")
+                self.enemylist.append([0, err, live,self.x,self.y, 1, 1, None,1])
+                del self.cominglist[0]
+            elif "L" in coming:
+                c = len(coming)
+                coming=coming[1:c]
+                live = int(coming)
+                liste = ((self.x+10), self.y,(self.x+5), (self.y+10),(self.x-5), (self.y+10),(self.x-10), self.y,(self.x-5), (self.y-10),(self.x+5), (self.y-10))
+                err = self.cv.create_polygon(liste, fill="red")
+                self.enemylist.append([0, err, live,self.x,self.y, 2, 1, None,1])
+                del self.cominglist[0]
+            elif "S" in coming:
+                c = len(coming)
+                coming=coming[1:c]
+                live = int(coming)
+                liste = ((self.x+10), self.y,(self.x-5), (self.y+10),(self.x-5), (self.y-10))
+                err = self.cv.create_polygon(liste, fill="red")
+                self.enemylist.append([0, err, live,self.x,self.y, 1, 2, None,1])
+                del self.cominglist[0]
+        for i in range(len(self.enemylist)):
+            self.enemy = self.enemylist[i]
+            pos = self.enemy[0]
+            self.error = self.enemy[1]
+            if self.enemy[5] == 1:
+                for i in range(self.enemy[6]):
+                    if pos >= self.lpos:
+                        self.dlist.append(i)
+                    else:
+                        self.enemy[0] +=1
+                        if self.followlist[pos] == 1:
+                            self.cv.move(self.error, 1, -1)
+                        if self.followlist[pos] == 2:
+                            self.cv.move(self.error, 1, 0)
+                        if self.followlist[pos] == 3:
+                            self.cv.move(self.error, 1, 1)
+                        if self.followlist[pos] == 4:
+                            self.cv.move(self.error, 0, 1)
+                        if self.followlist[pos] == 5:
+                            self.cv.move(self.error, -1, 1)
+                        if self.followlist[pos] == 6:
+                            self.cv.move(self.error, -1, 0)
+                        if self.followlist[pos] == 7:
+                            self.cv.move(self.error, -1, -1)
+                        if self.followlist[pos] == 8:
+                            self.cv.move(self.error, 0, -1)
+                        ebb = self.cv.bbox(self.error)
+                        self.enemy[3] = (ebb[0]+ebb[2])/2
+                        self.enemy[4] = (ebb[1]+ebb[3])/2
+            else:
+                self.enemy[5]-=1
+        for i in range(len(self.dlist)):
+            d = self.dlist[i]
+            self.enemy = self.enemylist[d]
+            self.h-=self.enemy[8]
+            self.error = self.enemy[1]
+            self.cv.delete(self.error)
+            del self.enemylist[i]
+        self.dlist.clear()
+    def gs(self):
+        if self.run == False:
+            self.startround()
+        elif self.stop == True:
+            self.stop = False
+        else:
+            self.stop = True
+
+
+
+root = Tk()
+root.title("CTD")
+app = CTD(root)
+app.mainloop
+
+
+
+#raute = x^2*60*pi-(60*pi^1/2)
+#Deltoid = 0,7*x*((x^2-0,7x^2)+(2x^2-0,7x^2))
+
+#Stern = p(x/2*(1/(q*pi/p*pi-(q*pi/p*pi^1/2)))^2*(pi/p*pi-(pi/p*pi^1/2))*(cos(pi/p)-(pi/p*pi-(pi/p*pi^1/2))*tan((q-1)*pi/p))
+#sin=x*pi-(x*pi^1/2)
